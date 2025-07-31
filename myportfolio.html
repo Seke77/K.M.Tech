@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K.M | Web Development & Digital Solutions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50%25' y='50%25' font-size='80' text-anchor='middle' dominant-baseline='central'%3E%F0%9F%92%BB%3C/text%3E%3C/svg%3E"
+        type="image/svg+xml">
+    <!-- Chosen Palette: Professional Serenity (Soft Blues, Greys, and a touch of Green) -->
+    <!-- Application Structure Plan: A linear, narrative flow guides the visitor: Hero (introduction) -> About Me (personal context) -> Services (offerings) -> My Work (project showcase) -> Skills Overview (visual proficiency) -> Contact. This structure is designed for clear communication, leading a potential client through who the developer is, what they offer, and proof of their capabilities, culminating in a call to action. The "flowing" animations enhance the modern and professional aesthetic. -->
+    <!-- Visualization & Content Choices:
+        - Hero Text/Button: Goal: Capture attention, direct to next section. Viz: Text, button. Interaction: Fade-in animation. Justification: Standard, effective hero pattern. Method: HTML, Tailwind, JS animation.
+        - About Me Text: Goal: Provide personal context. Viz: Text blocks. Interaction: Scroll-triggered fade-in. Justification: Introduces the individual professionally. Method: HTML, Tailwind, JS animation.
+        - Services Cards: Goal: Detail offerings clearly. Viz: Cards with icons and descriptions. Interaction: Click to reveal more (modal), hover effects, scroll-triggered fade-in. Justification: Organizes information, encourages exploration. Method: HTML, Tailwind, Vanilla JS.
+        - Project Gallery: Goal: Showcase actual work. Viz: Image placeholders with project titles. Interaction: Hover effects, direct link to demo. Justification: Visual proof of capability, crucial for a portfolio. Method: HTML, placehold.co, Tailwind, JS animation.
+        - Skills Chart: Goal: Visually represent technical strengths. Viz: Bar chart. Interaction: Static display with data labels. Justification: Quick, digestible overview of technical stack. Library: Chart.js.
+        - Contact Form/Info: Goal: Facilitate outreach. Viz: Text, form fields. Interaction: Standard form. Justification: Essential for lead generation. Method: HTML, Tailwind.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F9FA;
+            /* Light Grey Background */
+            color: #343A40;
+            /* Dark Grey Text */
+        }
+
+        .bg-primary {
+            background-color: #4A90E2;
+        }
+
+        /* Blue */
+        .text-primary {
+            color: #4A90E2;
+        }
+
+        .bg-secondary {
+            background-color: #E0F2F7;
+        }
+
+        /* Light Blue */
+        .text-secondary {
+            color: #E0F2F7;
+        }
+
+        .bg-accent {
+            background-color: #6DD5ED;
+        }
+
+        /* Aqua */
+        .text-accent {
+            color: #6DD5ED;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        .nav-link {
+            transition: color 0.3s ease;
+        }
+
+        .nav-link.active,
+        .nav-link:hover {
+            color: #4A90E2;
+        }
+
+        /* Custom Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1.2s ease-out, transform 1.2s ease-out;
+        }
+
+        .animate-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .service-card {
+            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, background-color 0.3s ease-out;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.15), 0 6px 10px -3px rgba(0, 0, 0, 0.08);
+            background-color: #F0F8FF;
+            /* Lighter blue on hover */
+        }
+
+        .project-item img {
+            transition: transform 0.3s ease-out, filter 0.3s ease-out;
+        }
+
+        .project-item:hover img {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+
+        .project-item {
+            overflow: hidden;
+            /* Ensures scale doesn't break layout */
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header id="header" class="bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-primary flex items-center space-x-2">
+                <span class="text-3xl">💻</span>
+                <span>K.M</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#about" class="nav-link font-medium text-gray-600">About Me</a>
+                <a href="#services" class="nav-link font-medium text-gray-600">Services</a>
+                <a href="#portfolio" class="nav-link font-medium text-gray-600">Portfolio</a>
+                <a href="#skills" class="nav-link font-medium text-gray-600">Skills</a>
+                <a href="#contact"
+                    class="nav-link bg-primary text-white px-4 py-2 rounded-full hover:opacity-90 transition-opacity">Contact</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-primary">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7">
+                    </path>
+                </svg>
+            </button>
+        </nav>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="#about" class="block py-2 px-6 text-sm text-gray-700 hover:bg-gray-100">About Me</a>
+            <a href="#services" class="block py-2 px-6 text-sm text-gray-700 hover:bg-gray-100">Services</a>
+            <a href="#portfolio" class="block py-2 px-6 text-sm text-gray-700 hover:bg-gray-100">Portfolio</a>
+            <a href="#skills" class="block py-2 px-6 text-sm text-gray-700 hover:bg-gray-100">Skills</a>
+            <a href="#contact" class="block py-2 px-6 text-sm text-gray-700 hover:bg-gray-100">Contact</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="relative min-h-[60vh] md:min-h-[80vh] flex items-center bg-secondary/30">
+            <div class="container mx-auto px-6 text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-primary leading-tight mb-4 animate-fade-in-up"
+                    style="animation-delay: 0.1s;">Crafting Engaging Digital Experiences</h1>
+                <p class="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto mb-8 animate-fade-in-up"
+                    style="animation-delay: 0.3s;">I'm [Your Name], a dedicated web developer passionate about building
+                    modern, responsive, and user-friendly websites that bring ideas to life.</p>
+                <a href="#portfolio"
+                    class="bg-primary text-white px-8 py-3 rounded-full font-semibold text-lg hover:opacity-90 transition-opacity animate-fade-in-up"
+                    style="animation-delay: 0.5s;">View My Work</a>
+            </div>
+        </section>
+
+        <!-- About Me Section -->
+        <section id="about" class="py-20 md:py-28 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary mb-6 animate-on-scroll">About Me</h2>
+                <p class="text-lg text-gray-700 max-w-4xl mx-auto mb-12 animate-on-scroll">
+                    I am a frontend developer with a keen eye for UI/UX design and a strong understanding of information
+                    architecture. My goal is to transform complex ideas into intuitive and visually appealing web
+                    applications. I believe in creating solutions that are not just functional, but also delightful to
+                    use and easy to navigate.
+                </p>
+                <div class="grid md:grid-cols-2 gap-12 text-left">
+                    <div class="animate-on-scroll">
+                        <h3 class="text-2xl font-bold text-primary mb-4">My Approach</h3>
+                        <p class="text-gray-700">
+                            I focus on understanding the core needs of a project and its users, then design and develop
+                            solutions that are both effective and scalable. From initial concept to final deployment, I
+                            prioritize clean code, responsive design, and optimal performance to ensure a seamless
+                            experience across all devices.
+                        </p>
+                    </div>
+                    <div class="animate-on-scroll">
+                        <h3 class="text-2xl font-bold text-primary mb-4">Why Work With Me?</h3>
+                        <p class="text-gray-700">
+                            I bring a blend of technical expertise and creative problem-solving to every project. I'm
+                            committed to delivering high-quality web solutions that not only meet your objectives but
+                            also exceed your expectations, ensuring your online presence stands out.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="py-20 md:py-28">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4 animate-on-scroll">My Services</h2>
+                    <p class="text-lg text-gray-700 max-w-3xl mx-auto animate-on-scroll">I offer a range of services to
+                        help you establish and enhance your digital footprint. Click on a service to learn more.</p>
+                </div>
+                <div id="services-grid" class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Service Cards will be injected here by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Service Detail Modal -->
+        <div id="service-modal"
+            class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+            <div
+                class="bg-white rounded-lg shadow-2xl w-full max-w-lg p-8 relative transform transition-all scale-95 opacity-0">
+                <button id="close-modal"
+                    class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">&times;</button>
+                <h3 id="modal-title" class="text-2xl font-bold text-primary mb-4"></h3>
+                <p id="modal-description" class="text-gray-700"></p>
+            </div>
+        </div>
+
+        <!-- My Work (Portfolio) Section -->
+        <section id="portfolio" class="py-20 md:py-28 bg-secondary/10">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4 animate-on-scroll">My Work</h2>
+                    <p class="text-lg text-gray-700 max-w-3xl mx-auto animate-on-scroll">Here are some examples of my
+                        recent projects, demonstrating my ability to create engaging and functional web applications.
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Generic Web Project Placeholder -->
+                    <div class="rounded-lg shadow-md overflow-hidden animate-on-scroll project-item">
+                        <img src="https://raw.githubusercontent.com/Seke77/K.M.Tech/main/bookify.png"
+                            alt="Custom Web Application bookfiy" width="300" height="200"
+                            class="w-full h-48 object-cover">
+                        <div class="p-4 bg-white">
+                            <h3 class="font-semibold text-primary text-lg mb-2">Custom Web Application</h3>
+                            <p class="text-sm text-gray-600 mb-4">A bespoke web application designed to streamline
+                                [specific process] for [target audience]. Features include [key feature 1] and [key
+                                feature 2].</p>
+                            <a href="#" target="_blank" class="text-accent hover:underline font-medium">Coming Soon
+                                &rarr;</a>
+                        </div>
+                    </div>
+                    <!-- E-commerce Concept Project -->
+                    <div class="rounded-lg shadow-md overflow-hidden animate-on-scroll project-item">
+                        <img src="https://raw.githubusercontent.com/Seke77/K.M.Tech/main/ecommer.png"
+                            alt="E-commerce Concept" width="600" height="200" class="w-full h-48 object-cover">
+                        <div class="p-4 bg-white">
+                            <h3 class="font-semibold text-primary text-lg mb-2">E-commerce Platform Concept</h3>
+                            <p class="text-sm text-gray-600 mb-4">A responsive e-commerce front-end demonstrating
+                                product listings, filtering, and a seamless shopping experience.</p>
+                            <a href="#" class="text-accent hover:underline font-medium">Coming Soon &rarr;</a>
+                        </div>
+                    </div>
+                    <!-- Dashboard UI Project -->
+                    <div class="rounded-lg shadow-md overflow-hidden animate-on-scroll project-item">
+                        <img src="https://raw.githubusercontent.com/Seke77/K.M.Tech/main/dashboard.png"
+                            alt="Dashboard UI" width="300" height="50" class="w-full h-48 object-cover">
+                        <div class="p-4 bg-white">
+                            <h3 class="font-semibold text-primary text-lg mb-2">Interactive Dashboard UI</h3>
+                            <p class="text-sm text-gray-600 mb-4">A data visualization dashboard featuring dynamic
+                                charts and customizable widgets for business insights.</p>
+                            <a href="#" class="text-accent hover:underline font-medium">Coming Soon &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Overview Section -->
+        <section id="skills" class="py-20 md:py-28 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4 animate-on-scroll">My Core Skills</h2>
+                    <p class="text-lg text-gray-700 max-w-3xl mx-auto animate-on-scroll">My expertise spans key areas of
+                        modern web development, ensuring comprehensive and effective solutions.</p>
+                </div>
+                <div class="chart-container animate-on-scroll">
+                    <canvas id="skillsChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact & Footer Section -->
+        <footer id="contact" class="bg-gray-800 text-white">
+            <div class="container mx-auto px-6 py-16">
+                <div class="grid md:grid-cols-3 gap-12 text-center md:text-left">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4">Let's Connect</h3>
+                        <p class="text-gray-400">Ready to start your next project?</p>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Get In Touch</h4>
+                        <p class="text-gray-400">Email: <a href="mailto:onuorahkosiso1@gmail.com"
+                                class="hover:text-accent">Message Here</a></p>
+                        <p class="text-gray-400 mt-2">Phone: +2349071669126</p>
+                        <p class="text-gray-400 mt-2">Location: Onitsha, Nigeria</p>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Follow Me</h4>
+                        <p class="text-gray-400 mb-4">Connect on social media for updates.</p>
+                        <div class="flex justify-center md:justify-start space-x-4">
+                            <!--                             <a href="#" class="text-gray-400 hover:text-white transition-colors">LinkedIn</a> -->
+                            <a href="https://github.com/Seke77/"
+                                class="text-gray-400 hover:text-white transition-colors">
+                                <!-- Replace with actual GitHub SVG path -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 640 640"
+                                    fill="currentColor">
+                                    <path
+                                        d="M237.9 461.4C237.9 463.4 235.6 465 232.7 465C229.4 465.3 227.1 463.7 227.1 461.4C227.1 459.4 229.4 457.8 232.3 457.8C235.3 457.5 237.9 459.1 237.9 461.4zM206.8 456.9C206.1 458.9 208.1 461.2 211.1 461.8C213.7 462.8 216.7 461.8 217.3 459.8C217.9 457.8 216 455.5 213 454.6C210.4 453.9 207.5 454.9 206.8 456.9zM251 455.2C248.1 455.9 246.1 457.8 246.4 460.1C246.7 462.1 249.3 463.4 252.3 462.7C255.2 462 257.2 460.1 256.9 458.1C256.6 456.2 253.9 454.9 251 455.2zM316.8 72C178.1 72 72 177.3 72 316C72 426.9 141.8 521.8 241.5 555.2C254.3 557.5 258.8 549.6 258.8 543.1C258.8 536.9 258.5 502.7 258.5 481.7C258.5 481.7 188.5 496.7 173.8 451.9C173.8 451.9 162.4 422.8 146 415.3C146 415.3 123.1 399.6 147.6 399.9C147.6 399.9 172.5 401.9 186.2 425.7C208.1 464.3 244.8 453.2 259.1 446.6C261.4 430.6 267.9 419.5 275.1 412.9C219.2 406.7 162.8 398.6 162.8 302.4C162.8 274.9 170.4 261.1 186.4 243.5C183.8 237 175.3 210.2 189 175.6C209.9 169.1 258 202.6 258 202.6C278 197 299.5 194.1 320.8 194.1C342.1 194.1 363.6 197 383.6 202.6C383.6 202.6 431.7 169 452.6 175.6C466.3 210.3 457.8 237 455.2 243.5C471.2 261.2 481 275 481 302.4C481 398.9 422.1 406.6 366.2 412.9C375.4 420.8 383.2 435.8 383.2 459.3C383.2 493 382.9 534.7 382.9 542.9C382.9 549.4 387.5 557.3 400.2 555C500.2 521.8 568 426.9 568 316C568 177.3 455.5 72 316.8 72zM169.2 416.9C167.9 417.9 168.2 420.2 169.9 422.1C171.5 423.7 173.8 424.4 175.1 423.1C176.4 422.1 176.1 419.8 174.4 417.9C172.8 416.3 170.5 415.6 169.2 416.9zM158.4 408.8C157.7 410.1 158.7 411.7 160.7 412.7C162.3 413.7 164.3 413.4 165 412C165.7 410.7 164.7 409.1 162.7 408.1C160.7 407.5 159.1 407.8 158.4 408.8zM190.8 444.4C189.2 445.7 189.8 448.7 192.1 450.6C194.4 452.9 197.3 453.2 198.6 451.6C199.9 450.3 199.3 447.3 197.3 445.4C195.1 443.1 192.1 442.8 190.8 444.4zM179.4 429.7C177.8 430.7 177.8 433.3 179.4 435.6C181 437.9 183.7 438.9 185 437.9C186.6 436.6 186.6 434 185 431.7C183.6 429.4 181 428.4 179.4 429.7z" />
+                                </svg>
+                                GitHub
+                            </a>
+                            <a href="https://wa.me/2349071669126?text=Hello%20I%20want%20to%20work%20with%20you" target="_blank" rel="noopener" aria-label="WhatsApp"
+                                class="text-gray-400 hover:text-white transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 640 640"
+                                    fill="currentColor">
+                                    <path
+                                        d="M476.9 161.1C435 119.1 379.2 96 319.9 96C197.5 96 97.9 195.6 97.9 318C97.9 357.1 108.1 395.3 127.5 429L96 544L213.7 513.1C246.1 530.8 282.6 540.1 319.8 540.1L319.9 540.1C442.2 540.1 544 440.5 544 318.1C544 258.8 518.8 203.1 476.9 161.1zM319.9 502.7C286.7 502.7 254.2 493.8 225.9 477L219.2 473L149.4 491.3L168 423.2L163.6 416.2C145.1 386.8 135.4 352.9 135.4 318C135.4 216.3 218.2 133.5 320 133.5C369.3 133.5 415.6 152.7 450.4 187.6C485.2 222.5 506.6 268.8 506.5 318.1C506.5 419.9 421.6 502.7 319.9 502.7zM421.1 364.5C415.6 361.7 388.3 348.3 383.2 346.5C378.1 344.6 374.4 343.7 370.7 349.3C367 354.9 356.4 367.3 353.1 371.1C349.9 374.8 346.6 375.3 341.1 372.5C308.5 356.2 287.1 343.4 265.6 306.5C259.9 296.7 271.3 297.4 281.9 276.2C283.7 272.5 282.8 269.3 281.4 266.5C280 263.7 268.9 236.4 264.3 225.3C259.8 214.5 255.2 216 251.8 215.8C248.6 215.6 244.9 215.6 241.2 215.6C237.5 215.6 231.5 217 226.4 222.5C221.3 228.1 207 241.5 207 268.8C207 296.1 226.9 322.5 229.6 326.2C232.4 329.9 268.7 385.9 324.4 410C359.6 425.2 373.4 426.5 391 423.9C401.7 422.3 423.8 410.5 428.4 397.5C433 384.5 433 373.4 431.6 371.1C430.3 368.6 426.6 367.2 421.1 364.5z" />
+                                </svg>
+                                WhatsApp Me
+                            </a>
+                            <!--                             <a href="#" class="text-gray-400 hover:text-white transition-colors">Twitter/X</a> -->
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-16 pt-8 border-t border-gray-700 text-center text-gray-500 text-sm">
+                    <p>&copy; <span id="year"></span> K.M. All Rights Reserved. Built with passion.</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Mobile Menu Toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Services Data
+            const servicesData = [
+                {
+                    title: 'Frontend Development',
+                    icon: '🌐',
+                    description: 'Building responsive, high-performance user interfaces using modern HTML, CSS (Tailwind CSS), and JavaScript frameworks like React.'
+                },
+                {
+                    title: 'UI/UX Design',
+                    icon: '✨',
+                    description: 'Crafting intuitive and aesthetically pleasing user experiences, focusing on usability, accessibility, and visual harmony.'
+                },
+                {
+                    title: 'Information Architecture',
+                    icon: '🏛️',
+                    description: 'Structuring content and navigation to ensure users can easily find, understand, and interact with information on your website.'
+                },
+                {
+                    title: 'Website Revitalization',
+                    icon: '🚀',
+                    description: 'Transforming outdated or underperforming websites into modern, secure, and engaging digital platforms that drive results.'
+                },
+                {
+                    title: 'Python Programming',
+                    icon: '🐍',
+                    description: 'Developing robust backend solutions, data analysis scripts, automation tools, and custom applications using Python.'
+                },
+                {
+                    title: 'Cybersecurity Solutions',
+                    icon: '🔒',
+                    description: 'Providing foundational cybersecurity insights and practices to help secure web applications and digital assets against common vulnerabilities.'
+                },
+                {
+                    title: 'Mobile App Development',
+                    icon: '📱',
+                    description: 'Creating cross-platform mobile applications with engaging user interfaces and seamless functionality.'
+                },
+                {
+                    title: 'Networking Solutions',
+                    icon: '🔗',
+                    description: 'Consulting on basic network architecture, connectivity, and optimization for web-based services and applications.'
+                }
+            ];
+
+            // Populate Services Grid
+            const servicesGrid = document.getElementById('services-grid');
+            servicesData.forEach(service => {
+                const card = document.createElement('div');
+                card.className = 'service-card bg-white p-8 rounded-lg shadow-md cursor-pointer animate-on-scroll';
+                card.innerHTML = `
+                    <div class="text-5xl mb-4">${service.icon}</div>
+                    <h3 class="text-xl font-bold text-primary mb-2">${service.title}</h3>
+                    <p class="text-gray-600">Click to learn more</p>
+                `;
+                card.addEventListener('click', () => openModal(service));
+                servicesGrid.appendChild(card);
+            });
+
+            // Modal Logic
+            const modal = document.getElementById('service-modal');
+            const modalContent = modal.querySelector('div');
+            const closeModalButton = document.getElementById('close-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalDescription = document.getElementById('modal-description');
+
+            function openModal(service) {
+                modalTitle.textContent = service.title;
+                modalDescription.textContent = service.description;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setTimeout(() => {
+                    modalContent.classList.remove('scale-95', 'opacity-0');
+                }, 10);
+            }
+
+            function closeModal() {
+                modalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 200);
+            }
+
+            closeModalButton.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+
+            // Intersection Observer for general scroll animations
+            const animateOnScrollElements = document.querySelectorAll('.animate-on-scroll');
+            const scrollObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.2 }); // Trigger when 20% of element is visible
+
+            animateOnScrollElements.forEach(element => {
+                scrollObserver.observe(element);
+            });
+
+            // Skills Chart
+            const skillsCtx = document.getElementById('skillsChart').getContext('2d');
+            const skillsLabels = ['HTML/CSS', 'JavaScript', 'Tailwind CSS', 'UI/UX Design', 'Information Arch.', 'Responsive Design', 'Python', 'Cybersecurity', 'App Dev', 'Networking'];
+            const skillsChart = new Chart(skillsCtx, {
+                type: 'bar',
+                data: {
+                    labels: skillsLabels,
+                    datasets: [{
+                        label: 'Proficiency Level',
+                        data: [90, 80, 65, 84, 80, 93, 95, 95, 80, 90], /* Adjust these values based on your actual proficiency */
+                        backgroundColor: [
+                            '#4A90E2', '#6DD5ED', '#4A90E2', '#6DD5ED', '#4A90E2', '#6DD5ED', '#4A90E2', '#6DD5ED', '#4A90E2', '#6DD5ED'
+                        ],
+                        borderColor: [
+                            '#3A7ACA', '#59B9D0', '#3A7ACA', '#59B9D0', '#3A7ACA', '#59B9D0', '#3A7ACA', '#59B9D0', '#3A7ACA', '#59B9D0'
+                        ],
+                        borderWidth: 1,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'My Technical Skills',
+                            font: {
+                                size: 18
+                            },
+                            color: '#343A40',
+                            padding: {
+                                bottom: 20
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                                color: '#00000010'
+                            },
+                            ticks: {
+                                callback: value => value + '%'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+            // Animate bars up/down every 1.5 seconds
+            setInterval(() => {
+                // Generate random values between 50 and 100 for each skill
+                skillsChart.data.datasets[0].data = Array.from(
+                    { length: skillsChart.data.labels.length },
+                    () => Math.floor(Math.random() * 10) + 85  // for bar chart, values between 85 and 95
+                );
+                skillsChart.update();
+            }, 1500);
+
+            // Smooth Scrolling & Active Nav Link
+            const navLinks = document.querySelectorAll('a[href^="#"]');
+            const sections = document.querySelectorAll('section[id]');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                        if (mobileMenu.classList.contains('hidden') === false) {
+                            mobileMenu.classList.add('hidden');
+                        }
+                    }
+                });
+            });
+
+            const navObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        document.querySelectorAll('.nav-link').forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: '-50% 0px -50% 0px' });
+
+            sections.forEach(section => {
+                navObserver.observe(section);
+            });
+
+
+            // Set current year in footer
+            document.getElementById('year').textContent = new Date().getFullYear();
+        });
+    </script>
+</body>
+
+</html>
